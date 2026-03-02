@@ -1,0 +1,72 @@
+# ========================================
+# Internal docs (Korean, not pushed)
+# ========================================
+PRD.md
+docs/internal/
+*.internal.md
+
+# ========================================
+# macOS
+# ========================================
+.DS_Store
+*.swp
+*~
+
+# ========================================
+# Python (Bridge Server)
+# ========================================
+__pycache__/
+*.py[cod]
+*$py.class
+*.egg-info/
+dist/
+build/
+.eggs/
+*.egg
+.venv/
+venv/
+env/
+.python-version
+
+# ========================================
+# Xcode / Swift
+# ========================================
+xcuserdata/
+*.xcscmblueprint
+*.xccheckout
+DerivedData/
+*.hmap
+*.ipa
+*.dSYM.zip
+*.dSYM
+*.moved-aside
+*.pbxuser
+!default.pbxuser
+*.mode1v3
+!default.mode1v3
+*.mode2v3
+!default.mode2v3
+*.perspectivev3
+!default.perspectivev3
+*.xcworkspace
+!default.xcworkspace
+
+# ========================================
+# IDE
+# ========================================
+.idea/
+.vscode/
+*.sublime-*
+
+# ========================================
+# Environment & secrets
+# ========================================
+.env
+.env.*
+!.env.example
+
+# ========================================
+# Claude Code / OMC
+# ========================================
+.claude/
+.omc/
