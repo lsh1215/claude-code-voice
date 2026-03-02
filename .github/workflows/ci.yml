@@ -1,0 +1,33 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  readme-sync:
+    name: README Sync Check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Check all README variants exist
+        run: |
+          ERRORS=0
+          for lang in "" ".ko" ".ja" ".zh"; do
+            FILE="README${lang}.md"
+            if [ ! -f "$FILE" ]; then
+              echo "::error::Missing ${FILE}"
+              ERRORS=$((ERRORS + 1))
+            else
+              echo "✓ ${FILE} exists"
+            fi
+          done
+          if [ $ERRORS -gt 0 ]; then
+            exit 1
+          fi
