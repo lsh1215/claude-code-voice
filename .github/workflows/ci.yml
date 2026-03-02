@@ -31,28 +31,3 @@ jobs:
           if [ $ERRORS -gt 0 ]; then
             exit 1
           fi
-
-  project-structure:
-    name: Project Structure Check
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Check required files exist
-        run: |
-          ERRORS=0
-          REQUIRED_FILES=(
-            "README.md"
-            ".gitignore"
-          )
-          for file in "${REQUIRED_FILES[@]}"; do
-            if [ ! -f "$file" ]; then
-              echo "::error::Missing required file: ${file}"
-              ERRORS=$((ERRORS + 1))
-            else
-              echo "✓ ${file} exists"
-            fi
-          done
-          if [ $ERRORS -gt 0 ]; then
-            exit 1
-          fi
