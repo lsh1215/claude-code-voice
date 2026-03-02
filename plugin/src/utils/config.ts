@@ -9,6 +9,7 @@ export interface VoiceConfig {
   vadThreshold: number;      // 0.01-0.1, default 0.02
   silenceDurationMs: number; // default 1500
   autoSubmit: boolean;       // default false (show text first)
+  audioDeviceIndex: number;  // avfoundation audio device index (default 0)
   debug: boolean;
 }
 
@@ -32,6 +33,7 @@ export const DEFAULT_CONFIG: VoiceConfig = {
   vadThreshold: 0.02,
   silenceDurationMs: 1500,
   autoSubmit: false,
+  audioDeviceIndex: 0,
   debug: process.env.CLAUDE_VOICE_DEBUG === '1',
 };
 

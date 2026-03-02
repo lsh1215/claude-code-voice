@@ -9,6 +9,7 @@ export interface VADCaptureOptions {
   rmsThreshold?: number;        // silence RMS threshold (default 0.02)
   sampleRate?: number;          // default 16000
   outputPath?: string;
+  audioDeviceIndex?: number;    // avfoundation audio device index (default 0)
 }
 
 // Compute RMS of 16-bit LE PCM buffer (values normalized 0..1)
@@ -74,13 +75,14 @@ export async function captureAudioWithVAD(options: VADCaptureOptions = {}): Prom
     rmsThreshold = 0.02,
     sampleRate = 16000,
     outputPath = path.join(os.tmpdir(), `voice-vad-${Date.now()}.wav`),
+    audioDeviceIndex = 0,
   } = options;
 
   return new Promise((resolve, reject) => {
     // Stream raw s16le PCM to stdout
     const args = [
       '-f', 'avfoundation',
-      '-i', ':0',
+      '-i', `:${audioDeviceIndex}`,
       '-ar', String(sampleRate),
       '-ac', '1',
       '-f', 's16le',   // raw 16-bit PCM, no container
