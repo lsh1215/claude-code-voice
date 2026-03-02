@@ -74,6 +74,7 @@ models/
 # Plugin (generated files)
 # ========================================
 plugin/commands/voice.md
+plugin/commands/voice-config.md
 
 # ========================================
 # Claude Code / OMC

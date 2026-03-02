@@ -69,9 +69,9 @@ echo "  ✅  Build complete (plugin/dist/)"
 echo ""
 
 # -------------------------------------------------------
-# 4. Generate plugin/commands/voice.md from template
+# 4. Generate plugin/commands/voice.md and voice-config.md from templates
 # -------------------------------------------------------
-echo "[4/5] Generating plugin/commands/voice.md..."
+echo "[4/5] Generating plugin/commands/voice.md and voice-config.md..."
 TEMPLATE="$PLUGIN_DIR/commands/voice.md.template"
 OUTPUT="$PLUGIN_DIR/commands/voice.md"
 
@@ -83,6 +83,17 @@ fi
 sed "s|{{PLUGIN_DIR}}|$PLUGIN_DIR|g" "$TEMPLATE" > "$OUTPUT"
 echo "  ✅  Generated: $OUTPUT"
 echo "      Using plugin dir: $PLUGIN_DIR"
+
+TEMPLATE_VC="$PLUGIN_DIR/commands/voice-config.md.template"
+OUTPUT_VC="$PLUGIN_DIR/commands/voice-config.md"
+
+if [ ! -f "$TEMPLATE_VC" ]; then
+  echo "  ❌  Template not found: $TEMPLATE_VC"
+  exit 1
+fi
+
+sed "s|{{PLUGIN_DIR}}|$PLUGIN_DIR|g" "$TEMPLATE_VC" > "$OUTPUT_VC"
+echo "  ✅  Generated: $OUTPUT_VC"
 echo ""
 
 # -------------------------------------------------------
