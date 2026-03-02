@@ -30,7 +30,7 @@ if ! command -v whisper-cli &>/dev/null; then
   echo "      Linux: see https://github.com/ggerganov/whisper.cpp"
   MISSING=1
 else
-  echo "  ✅  whisper-cli $(whisper-cli --version 2>&1 | head -1 || echo '(found)')"
+  echo "  ✅  whisper-cli at $(command -v whisper-cli)"
 fi
 
 if ! command -v ffmpeg &>/dev/null; then
