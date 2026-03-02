@@ -1,0 +1,8 @@
+{
+  "name": "voice",
+  "version": "0.2.0",
+  "description": "Voice (STT) input for Claude Code — speak your commands",
+  "author": "lsh1215",
+  "homepage": "https://github.com/lsh1215/claude-code-voice",
+  "license": "MIT"
+}

@@ -1,0 +1,9 @@
+---
+description: Start voice input. Records audio via microphone, transcribes with whisper, and returns text for Claude Code input.
+---
+
+Record voice input and get transcription:
+
+!`node "{{PLUGIN_DIR}}/dist/cli.js" voice 2>/dev/null`
+
+Use the transcribed text above as my next instruction.
