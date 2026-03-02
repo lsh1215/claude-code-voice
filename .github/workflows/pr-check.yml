@@ -26,6 +26,7 @@ jobs:
             refactor
             test
           scopes: |
+            plugin
             bridge-server
             mac-app
             ios-app
