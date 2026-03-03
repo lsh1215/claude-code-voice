@@ -37,6 +37,7 @@ export async function handleVoice(): Promise<void> {
         silenceDurationMs: config.silenceDurationMs,
         rmsThreshold: config.vadThreshold,
         sampleRate: 16000,
+        audioDeviceIndex: config.audioDeviceIndex,
       });
     } else {
       process.stderr.write('🎤 Listening... (speak now, Ctrl+C to cancel)\n');
