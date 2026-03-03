@@ -1,0 +1,17 @@
+---
+description: Configure voice plugin settings (language, model, VAD threshold, silence duration).
+---
+
+!`node "{{PLUGIN_DIR}}/dist/cli.js" voice-config show 2>/dev/null`
+
+The current settings are shown above. What would you like to change?
+
+Available settings:
+- **language**: `ko` (Korean+English), `en` (English only), `auto` (auto-detect)
+- **silenceDurationMs**: milliseconds of silence before auto-stop (default: 1500)
+- **vadThreshold**: RMS silence threshold, lower = more sensitive (default: 0.02, range: 0.001–0.5)
+- **modelPath**: path to whisper ggml model file
+
+To change a setting, tell me what you want (e.g., "set language to en" or "increase silence to 2 seconds").
+
+Once you tell me, I'll run: !`node "{{PLUGIN_DIR}}/dist/cli.js" voice-config set <key> <value> 2>/dev/null`

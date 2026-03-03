@@ -1,2 +1,4 @@
 dist/
 node_modules/
+commands/voice.md
+commands/voice-config.md
