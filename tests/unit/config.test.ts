@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach, afterEach } from 'vitest';
-import { loadConfig, saveConfig, DEFAULT_CONFIG } from '../../src/utils/config.js';
+import { loadConfig, saveConfig, DEFAULT_CONFIG } from '../../plugin/src/utils/config.js';
 import fs from 'fs';
 import path from 'path';
 import os from 'os';

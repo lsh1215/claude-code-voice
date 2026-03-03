@@ -4,28 +4,28 @@ import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 // Module mocks — must be declared before any imports that use those modules.
 // ---------------------------------------------------------------------------
 
-vi.mock('../../src/stt/audio-capture.js', () => ({
+vi.mock('../../plugin/src/stt/audio-capture.js', () => ({
   captureAudio: vi.fn(),
 }));
 
-vi.mock('../../src/vad/silence-vad.js', () => ({
+vi.mock('../../plugin/src/vad/silence-vad.js', () => ({
   captureAudioWithVAD: vi.fn(),
   computeRMS: vi.fn(),
   writeWAV: vi.fn(),
 }));
 
-vi.mock('../../src/stt/whisper-engine.js', () => ({
+vi.mock('../../plugin/src/stt/whisper-engine.js', () => ({
   isWhisperAvailable: vi.fn(),
   transcribe: vi.fn(),
 }));
 
-vi.mock('../../src/utils/platform.js', () => ({
+vi.mock('../../plugin/src/utils/platform.js', () => ({
   detectBinaries: vi.fn(),
   getPlatform: vi.fn(() => 'darwin'),
   getAudioRecorder: vi.fn(() => 'ffmpeg'),
 }));
 
-vi.mock('../../src/utils/config.js', () => ({
+vi.mock('../../plugin/src/utils/config.js', () => ({
   loadConfig: vi.fn(() => ({
     sttEngine: 'whisper-cli',
     language: 'ko',
@@ -54,10 +54,10 @@ vi.mock('fs', async (importOriginal) => {
 // ---------------------------------------------------------------------------
 // Imports after mocks
 // ---------------------------------------------------------------------------
-import { handleVoice } from '../../src/commands/voice-handler.js';
-import { isWhisperAvailable, transcribe } from '../../src/stt/whisper-engine.js';
-import { captureAudioWithVAD } from '../../src/vad/silence-vad.js';
-import { detectBinaries } from '../../src/utils/platform.js';
+import { handleVoice } from '../../plugin/src/commands/voice-handler.js';
+import { isWhisperAvailable, transcribe } from '../../plugin/src/stt/whisper-engine.js';
+import { captureAudioWithVAD } from '../../plugin/src/vad/silence-vad.js';
+import { detectBinaries } from '../../plugin/src/utils/platform.js';
 import fs from 'fs';
 
 // ---------------------------------------------------------------------------

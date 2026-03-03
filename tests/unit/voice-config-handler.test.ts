@@ -19,7 +19,7 @@ vi.mock('fs', async () => {
 });
 
 // Mock config module
-vi.mock('../../src/utils/config.js', () => ({
+vi.mock('../../plugin/src/utils/config.js', () => ({
   loadConfig: vi.fn(),
   saveConfig: vi.fn(),
   getConfigDir: vi.fn(() => '/mock/.claude/plugins/voice'),
@@ -34,8 +34,8 @@ vi.mock('../../src/utils/config.js', () => ({
   },
 }));
 
-import { handleVoiceConfig } from '../../src/commands/voice-config-handler.js';
-import { loadConfig, saveConfig, DEFAULT_CONFIG } from '../../src/utils/config.js';
+import { handleVoiceConfig } from '../../plugin/src/commands/voice-config-handler.js';
+import { loadConfig, saveConfig, DEFAULT_CONFIG } from '../../plugin/src/utils/config.js';
 import fs from 'fs';
 
 describe('handleVoiceConfig', () => {

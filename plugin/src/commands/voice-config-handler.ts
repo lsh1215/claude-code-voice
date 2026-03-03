@@ -39,7 +39,7 @@ async function handleShow(): Promise<void> {
 async function handleSet(args: string[]): Promise<void> {
   if (args.length < 2) {
     process.stdout.write('Usage: voice-config set <key> <value>\n');
-    process.stdout.write('Keys: language, silenceDurationMs, vadThreshold, modelPath\n');
+    process.stdout.write('Keys: language, silenceDurationMs, vadThreshold, modelPath, audioDeviceIndex\n');
     process.exit(1);
   }
 
@@ -89,17 +89,28 @@ async function handleSet(args: string[]): Promise<void> {
       break;
     }
 
+    case 'audioDeviceIndex': {
+      const num = Number(value);
+      if (isNaN(num) || !Number.isInteger(num) || num < 0) {
+        process.stdout.write(`Error: audioDeviceIndex must be a non-negative integer (got: ${value})\n`);
+        process.exit(1);
+      }
+      saveConfig({ audioDeviceIndex: num });
+      process.stdout.write(`audioDeviceIndex set to: ${num}\n`);
+      break;
+    }
+
     default: {
       process.stdout.write(`Error: unknown key "${key}"\n`);
-      process.stdout.write('Valid keys: language, silenceDurationMs, vadThreshold, modelPath\n');
+      process.stdout.write('Valid keys: language, silenceDurationMs, vadThreshold, modelPath, audioDeviceIndex\n');
       process.exit(1);
     }
   }
 }
 
 async function handleReset(): Promise<void> {
-  const { sttEngine, language, modelPath, vadThreshold, silenceDurationMs, autoSubmit, debug } = DEFAULT_CONFIG;
-  saveConfig({ sttEngine, language, modelPath, vadThreshold, silenceDurationMs, autoSubmit, debug });
+  const { sttEngine, language, modelPath, vadThreshold, silenceDurationMs, autoSubmit, audioDeviceIndex, debug } = DEFAULT_CONFIG;
+  saveConfig({ sttEngine, language, modelPath, vadThreshold, silenceDurationMs, autoSubmit, audioDeviceIndex, debug });
   process.stdout.write('Configuration reset to defaults.\n');
   await handleShow();
 }
@@ -115,7 +126,8 @@ async function handleHelp(): Promise<void> {
   process.stdout.write('  language         ko | en | auto\n');
   process.stdout.write('  silenceDurationMs  500-5000 (ms)\n');
   process.stdout.write('  vadThreshold     0.001-0.5\n');
-  process.stdout.write('  modelPath        /path/to/ggml-model.bin\n\n');
+  process.stdout.write('  modelPath        /path/to/ggml-model.bin\n');
+  process.stdout.write('  audioDeviceIndex  0+ (avfoundation device index)\n\n');
   process.stdout.write('Current configuration:\n');
   process.stdout.write(`  language         = ${config.language}\n`);
   process.stdout.write(`  silenceDurationMs= ${config.silenceDurationMs}\n`);
