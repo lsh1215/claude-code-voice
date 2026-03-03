@@ -70,7 +70,7 @@ describe('config loading and validation', () => {
     vi.mocked(fs.existsSync).mockReturnValue(false);
     const config = loadConfig();
     expect(config).toMatchObject({
-      sttEngine: 'whisper-cli',
+      sttEngine: DEFAULT_CONFIG.sttEngine,
       language: DEFAULT_CONFIG.language,
       vadThreshold: DEFAULT_CONFIG.vadThreshold,
       silenceDurationMs: DEFAULT_CONFIG.silenceDurationMs,

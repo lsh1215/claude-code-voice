@@ -1,7 +1,15 @@
 import fs from 'fs';
+import path from 'path';
 import { captureAudio } from '../stt/audio-capture.js';
 import { captureAudioWithVAD } from '../vad/silence-vad.js';
 import { transcribe, isWhisperAvailable } from '../stt/whisper-engine.js';
+import {
+  isWhisperServerAvailable,
+  readServerInfo,
+  isServerAlive,
+  startWhisperServer,
+  transcribeViaServer,
+} from '../stt/whisper-server-manager.js';
 import { detectBinaries } from '../utils/platform.js';
 import { loadConfig } from '../utils/config.js';
 import { logger } from '../utils/logger.js';
@@ -11,9 +19,16 @@ export async function handleVoice(): Promise<void> {
   const binaries = detectBinaries();
 
   // 1. Check prerequisites
-  if (!isWhisperAvailable()) {
-    process.stdout.write('❌ whisper-cli not found.\nInstall: brew install whisper-cpp\n');
-    process.exit(1);
+  if (config.sttEngine === 'whisper-server') {
+    if (!isWhisperServerAvailable()) {
+      process.stdout.write('❌ whisper-server not found.\nInstall: brew install whisper-cpp\n');
+      process.exit(1);
+    }
+  } else {
+    if (!isWhisperAvailable()) {
+      process.stdout.write('❌ whisper-cli not found.\nInstall: brew install whisper-cpp\n');
+      process.exit(1);
+    }
   }
 
   if (!binaries.ffmpeg) {
@@ -23,7 +38,8 @@ export async function handleVoice(): Promise<void> {
 
   if (!fs.existsSync(config.modelPath)) {
     process.stdout.write(`❌ Whisper model not found: ${config.modelPath}\n`);
-    process.stdout.write(`Download: curl -L "https://huggingface.co/ggerganov/whisper.cpp/resolve/main/ggml-base.bin" -o ${config.modelPath}\n`);
+    const modelFile = path.basename(config.modelPath);
+    process.stdout.write(`Download: curl -L "https://huggingface.co/ggerganov/whisper.cpp/resolve/main/${modelFile}" -o ${config.modelPath}\n`);
     process.exit(1);
   }
 
@@ -55,23 +71,63 @@ export async function handleVoice(): Promise<void> {
 
   // 3. Transcribe
   process.stderr.write('⏳ Transcribing...\n');
-  try {
-    const result = transcribe(audioPath, {
-      language: config.language,
-      modelPath: config.modelPath,
-    });
+  let transcribedText = '';
+  let transcribeError: Error | null = null;
 
-    if (!result.text) {
-      process.stdout.write('(no speech detected)\n');
+  try {
+    if (config.sttEngine === 'whisper-server') {
+      let serverInfo = readServerInfo();
+      if (!serverInfo || !isServerAlive(serverInfo)) {
+        process.stderr.write('⚙️  Starting whisper-server (first run)...\n');
+        try {
+          await startWhisperServer({
+            modelPath: config.modelPath,
+            language: config.language,
+            port: config.whisperServerPort,
+          });
+          serverInfo = readServerInfo()!;
+        } catch (serverErr) {
+          process.stderr.write(`⚠️  whisper-server failed to start: ${serverErr instanceof Error ? serverErr.message : String(serverErr)}\n`);
+          if (!isWhisperAvailable()) {
+            process.stderr.write('❌ whisper-cli also not available. Cannot transcribe.\n');
+            return;
+          }
+          process.stderr.write('⚠️  Falling back to whisper-cli...\n');
+          const result = transcribe(audioPath!, {
+            language: config.language,
+            modelPath: config.modelPath,
+          });
+          transcribedText = result.text;
+          logger.debug(`Transcribed via whisper-cli fallback in ${result.durationMs}ms`);
+        }
+      }
+      if (!transcribedText && serverInfo) {
+        transcribedText = await transcribeViaServer(audioPath!, serverInfo.port);
+      }
     } else {
-      // Output just the transcribed text — Claude Code's /voice command will use this as input
-      process.stdout.write(result.text + '\n');
+      const result = transcribe(audioPath!, {
+        language: config.language,
+        modelPath: config.modelPath,
+      });
+      transcribedText = result.text;
       logger.debug(`Transcribed in ${result.durationMs}ms`);
     }
+  } catch (err) {
+    transcribeError = err instanceof Error ? err : new Error(String(err));
   } finally {
-    // Clean up temp file
     if (audioPath && fs.existsSync(audioPath)) {
       fs.unlinkSync(audioPath);
     }
+  }
+
+  if (transcribeError) {
+    process.stdout.write(`❌ Transcription failed: ${transcribeError.message}\n`);
+    process.exit(1);
+  }
+
+  if (!transcribedText) {
+    process.stdout.write('(no speech detected)\n');
+  } else {
+    process.stdout.write(transcribedText + '\n');
   }
 }

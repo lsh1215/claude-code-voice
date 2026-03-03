@@ -1,8 +1,22 @@
 import { loadConfig, saveConfig, DEFAULT_CONFIG, getConfigDir } from '../utils/config.js';
+import { stopWhisperServer } from '../stt/whisper-server-manager.js';
+import { detectPreferredMicIndex } from '../utils/device-detector.js';
 import fs from 'fs';
 
 export async function handleVoiceConfig(args: string[]): Promise<void> {
   const subcommand = args[0];
+
+  if (subcommand === 'stop-server') {
+    stopWhisperServer();
+    process.stdout.write('whisper-server stopped\n');
+    return;
+  }
+  if (subcommand === 'detect-mic') {
+    const idx = detectPreferredMicIndex();
+    saveConfig({ audioDeviceIndex: idx });
+    process.stdout.write(`audioDeviceIndex auto-set to: ${idx}\n`);
+    return;
+  }
 
   switch (subcommand) {
     case 'show':
@@ -26,12 +40,14 @@ export async function handleVoiceConfig(args: string[]): Promise<void> {
 async function handleShow(): Promise<void> {
   const config = loadConfig();
   process.stdout.write('Current voice plugin configuration:\n');
+  process.stdout.write(`  sttEngine        = ${config.sttEngine}\n`);
   process.stdout.write(`  language         = ${config.language}\n`);
   process.stdout.write(`  silenceDurationMs= ${config.silenceDurationMs}\n`);
   process.stdout.write(`  vadThreshold     = ${config.vadThreshold}\n`);
   process.stdout.write(`  modelPath        = ${config.modelPath}\n`);
-  process.stdout.write(`  sttEngine        = ${config.sttEngine}\n`);
+  process.stdout.write(`  whisperServerPort= ${config.whisperServerPort}\n`);
   process.stdout.write(`  autoSubmit       = ${config.autoSubmit}\n`);
+  process.stdout.write(`  audioDeviceIndex = ${config.audioDeviceIndex}\n`);
   process.stdout.write(`  debug            = ${config.debug}\n`);
   process.stdout.write(`\nConfig file: ${getConfigDir()}/config.json\n`);
 }
@@ -39,7 +55,7 @@ async function handleShow(): Promise<void> {
 async function handleSet(args: string[]): Promise<void> {
   if (args.length < 2) {
     process.stdout.write('Usage: voice-config set <key> <value>\n');
-    process.stdout.write('Keys: language, silenceDurationMs, vadThreshold, modelPath, audioDeviceIndex\n');
+    process.stdout.write('Keys: language, silenceDurationMs, vadThreshold, modelPath, audioDeviceIndex, sttEngine, whisperServerPort\n');
     process.exit(1);
   }
 
@@ -53,7 +69,8 @@ async function handleSet(args: string[]): Promise<void> {
         process.exit(1);
       }
       saveConfig({ language: value });
-      process.stdout.write(`language set to: ${value}\n`);
+      stopWhisperServer();
+      process.stdout.write(`language set to: ${value} (whisper-server will restart on next /voice)\n`);
       break;
     }
 
@@ -85,7 +102,31 @@ async function handleSet(args: string[]): Promise<void> {
         process.exit(1);
       }
       saveConfig({ modelPath: value });
-      process.stdout.write(`modelPath set to: ${value}\n`);
+      stopWhisperServer();
+      process.stdout.write(`modelPath set to: ${value} (whisper-server will restart on next /voice)\n`);
+      break;
+    }
+
+    case 'sttEngine': {
+      if (value !== 'whisper-cli' && value !== 'whisper-server') {
+        process.stdout.write('Error: sttEngine must be "whisper-cli" or "whisper-server"\n');
+        process.exit(1);
+      }
+      saveConfig({ sttEngine: value as 'whisper-cli' | 'whisper-server' });
+      process.stdout.write(`sttEngine set to: ${value}\n`);
+      break;
+    }
+
+    case 'whisperServerPort': {
+      const num = Number(value);
+      if (isNaN(num) || !Number.isInteger(num) || num < 1024 || num > 65535) {
+        process.stdout.write('Error: whisperServerPort must be an integer 1024-65535\n');
+        process.exit(1);
+        return;
+      }
+      saveConfig({ whisperServerPort: num });
+      stopWhisperServer();
+      process.stdout.write(`whisperServerPort set to: ${num} (whisper-server stopped, will restart on next /voice)\n`);
       break;
     }
 
@@ -102,15 +143,16 @@ async function handleSet(args: string[]): Promise<void> {
 
     default: {
       process.stdout.write(`Error: unknown key "${key}"\n`);
-      process.stdout.write('Valid keys: language, silenceDurationMs, vadThreshold, modelPath, audioDeviceIndex\n');
+      process.stdout.write('Valid keys: language, silenceDurationMs, vadThreshold, modelPath, audioDeviceIndex, sttEngine, whisperServerPort\n');
       process.exit(1);
     }
   }
 }
 
 async function handleReset(): Promise<void> {
-  const { sttEngine, language, modelPath, vadThreshold, silenceDurationMs, autoSubmit, audioDeviceIndex, debug } = DEFAULT_CONFIG;
-  saveConfig({ sttEngine, language, modelPath, vadThreshold, silenceDurationMs, autoSubmit, audioDeviceIndex, debug });
+  const { sttEngine, language, modelPath, vadThreshold, silenceDurationMs, autoSubmit, audioDeviceIndex, whisperServerPort, debug } = DEFAULT_CONFIG;
+  saveConfig({ sttEngine, language, modelPath, vadThreshold, silenceDurationMs, autoSubmit, audioDeviceIndex, whisperServerPort, debug });
+  stopWhisperServer();
   process.stdout.write('Configuration reset to defaults.\n');
   await handleShow();
 }
@@ -121,16 +163,22 @@ async function handleHelp(): Promise<void> {
   process.stdout.write('Subcommands:\n');
   process.stdout.write('  show                     Show current configuration\n');
   process.stdout.write('  set <key> <value>        Update a setting\n');
-  process.stdout.write('  reset                    Reset all settings to defaults\n\n');
+  process.stdout.write('  reset                    Reset all settings to defaults\n');
+  process.stdout.write('  stop-server              Stop the whisper-server daemon\n');
+  process.stdout.write('  detect-mic               Auto-detect preferred microphone index\n\n');
   process.stdout.write('Available keys:\n');
+  process.stdout.write('  sttEngine        whisper-cli | whisper-server\n');
   process.stdout.write('  language         ko | en | auto\n');
   process.stdout.write('  silenceDurationMs  500-5000 (ms)\n');
   process.stdout.write('  vadThreshold     0.001-0.5\n');
   process.stdout.write('  modelPath        /path/to/ggml-model.bin\n');
-  process.stdout.write('  audioDeviceIndex  0+ (avfoundation device index)\n\n');
+  process.stdout.write('  audioDeviceIndex  0+ (avfoundation device index)\n');
+  process.stdout.write('  whisperServerPort  1024-65535 (default: 18080)\n\n');
   process.stdout.write('Current configuration:\n');
+  process.stdout.write(`  sttEngine        = ${config.sttEngine}\n`);
   process.stdout.write(`  language         = ${config.language}\n`);
   process.stdout.write(`  silenceDurationMs= ${config.silenceDurationMs}\n`);
   process.stdout.write(`  vadThreshold     = ${config.vadThreshold}\n`);
   process.stdout.write(`  modelPath        = ${config.modelPath}\n`);
+  process.stdout.write(`  whisperServerPort= ${config.whisperServerPort}\n`);
 }

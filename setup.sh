@@ -24,13 +24,14 @@ else
   echo "  ✅  node $NODE_VERSION"
 fi
 
-if ! command -v whisper-cli &>/dev/null; then
-  echo "  ❌  whisper-cli not found."
+if ! command -v whisper-cli &>/dev/null || ! command -v whisper-server &>/dev/null; then
+  echo "  ❌  whisper-cli or whisper-server not found."
   echo "      macOS: brew install whisper-cpp"
   echo "      Linux: see https://github.com/ggerganov/whisper.cpp"
   MISSING=1
 else
   echo "  ✅  whisper-cli at $(command -v whisper-cli)"
+  echo "  ✅  whisper-server at $(command -v whisper-server)"
 fi
 
 if ! command -v ffmpeg &>/dev/null; then
@@ -97,19 +98,44 @@ echo "  ✅  Generated: $OUTPUT_VC"
 echo ""
 
 # -------------------------------------------------------
-# 5. Check / note whisper model
+# 5. Check / download whisper model
 # -------------------------------------------------------
-echo "[5/5] Checking whisper model..."
-MODEL_PATH="$REPO_ROOT/models/ggml-base.bin"
-if [ -f "$MODEL_PATH" ]; then
-  echo "  ✅  Model found: $MODEL_PATH"
+echo "[5/5] Setting up whisper model..."
+mkdir -p "$REPO_ROOT/models"
+
+TURBO_MODEL="$REPO_ROOT/models/ggml-large-v3-turbo-q5_0.bin"
+BASE_MODEL="$REPO_ROOT/models/ggml-base.bin"
+
+if [ -f "$TURBO_MODEL" ]; then
+  echo "  ✅  Model found: $TURBO_MODEL"
+elif [ -f "$BASE_MODEL" ]; then
+  echo "  ✅  Model found: $BASE_MODEL"
+  echo "  ℹ️   For better Korean-English accuracy, consider downloading the turbo model:"
+  echo "      curl -L \"https://huggingface.co/ggerganov/whisper.cpp/resolve/main/ggml-large-v3-turbo-q5_0.bin\" \\"
+  echo "           -o \"$TURBO_MODEL\""
 else
-  echo "  ⚠️   Model not found at: $MODEL_PATH"
   echo ""
-  echo "  Download the base model with:"
-  echo "    mkdir -p \"$REPO_ROOT/models\""
-  echo "    curl -L \"https://huggingface.co/ggerganov/whisper.cpp/resolve/main/ggml-base.bin\" \\"
-  echo "         -o \"$MODEL_PATH\""
+  echo "  No model found. Select a model to download:"
+  echo "  [1] ggml-large-v3-turbo-q5_0.bin (~600MB) — recommended (better Korean-English accuracy)"
+  echo "  [2] ggml-base.bin (~141MB) — faster download"
+  echo ""
+  read -rp "  Choose [1/2, default=1]: " model_choice
+  case "$model_choice" in
+    2)
+      MODEL_URL="https://huggingface.co/ggerganov/whisper.cpp/resolve/main/ggml-base.bin"
+      MODEL_PATH="$BASE_MODEL"
+      MODEL_NAME="ggml-base.bin"
+      ;;
+    *)
+      MODEL_URL="https://huggingface.co/ggerganov/whisper.cpp/resolve/main/ggml-large-v3-turbo-q5_0.bin"
+      MODEL_PATH="$TURBO_MODEL"
+      MODEL_NAME="ggml-large-v3-turbo-q5_0.bin"
+      ;;
+  esac
+  echo ""
+  echo "  Downloading $MODEL_NAME..."
+  curl -L --progress-bar "$MODEL_URL" -o "$MODEL_PATH"
+  echo "  ✅  Model downloaded: $MODEL_PATH"
 fi
 echo ""
 

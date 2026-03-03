@@ -9,7 +9,7 @@ const TEST_CONFIG_DIR = path.join(os.tmpdir(), 'voice-plugin-test-' + Date.now()
 describe('config', () => {
   it('returns defaults when no config file exists', () => {
     const config = loadConfig();
-    expect(config.sttEngine).toBe('whisper-cli');
+    expect(config.sttEngine).toBe(DEFAULT_CONFIG.sttEngine);
     expect(config.language).toBe('ko');
     expect(config.autoSubmit).toBe(false);
   });

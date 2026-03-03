@@ -49,8 +49,8 @@ describe('config schema contract', () => {
     expect(typeof DEFAULT_CONFIG.debug).toBe('boolean');
   });
 
-  it('sttEngine value is "whisper-cli"', () => {
-    expect(DEFAULT_CONFIG.sttEngine).toBe('whisper-cli');
+  it('sttEngine default value is valid', () => {
+    expect(['whisper-cli', 'whisper-server']).toContain(DEFAULT_CONFIG.sttEngine);
   });
 
   it('vadThreshold is within valid range [0.001, 0.5]', () => {
