@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { getPlatform, detectBinaries } from '../../src/utils/platform.js';
+import { getPlatform, detectBinaries } from '../../plugin/src/utils/platform.js';
 
 describe('getPlatform', () => {
   it('returns darwin on macOS', () => {

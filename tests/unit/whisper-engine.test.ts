@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { isWhisperAvailable } from '../../src/stt/whisper-engine.js';
+import { isWhisperAvailable } from '../../plugin/src/stt/whisper-engine.js';
 
 describe('whisper-engine', () => {
   it('isWhisperAvailable returns boolean', () => {

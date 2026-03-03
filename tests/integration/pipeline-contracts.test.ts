@@ -21,39 +21,39 @@ vi.mock('fs', async (importOriginal) => {
   };
 });
 
-vi.mock('../../src/stt/audio-capture.js', () => ({
+vi.mock('../../plugin/src/stt/audio-capture.js', () => ({
   captureAudio: vi.fn(),
 }));
 
-vi.mock('../../src/vad/silence-vad.js', () => ({
+vi.mock('../../plugin/src/vad/silence-vad.js', () => ({
   captureAudioWithVAD: vi.fn(),
 }));
 
-vi.mock('../../src/stt/whisper-engine.js', () => ({
+vi.mock('../../plugin/src/stt/whisper-engine.js', () => ({
   transcribe: vi.fn(),
   isWhisperAvailable: vi.fn(),
 }));
 
-vi.mock('../../src/utils/platform.js', () => ({
+vi.mock('../../plugin/src/utils/platform.js', () => ({
   detectBinaries: vi.fn(),
   getPlatform: vi.fn(() => 'darwin'),
   getAudioRecorder: vi.fn(() => 'ffmpeg'),
 }));
 
-vi.mock('../../src/utils/config.js', () => ({
+vi.mock('../../plugin/src/utils/config.js', () => ({
   loadConfig: vi.fn(),
 }));
 
-vi.mock('../../src/utils/logger.js', () => ({
+vi.mock('../../plugin/src/utils/logger.js', () => ({
   logger: { debug: vi.fn(), info: vi.fn(), error: vi.fn() },
 }));
 
 import fs from 'fs';
-import { captureAudioWithVAD } from '../../src/vad/silence-vad.js';
-import { transcribe, isWhisperAvailable } from '../../src/stt/whisper-engine.js';
-import { detectBinaries } from '../../src/utils/platform.js';
-import { loadConfig } from '../../src/utils/config.js';
-import { handleVoice } from '../../src/commands/voice-handler.js';
+import { captureAudioWithVAD } from '../../plugin/src/vad/silence-vad.js';
+import { transcribe, isWhisperAvailable } from '../../plugin/src/stt/whisper-engine.js';
+import { detectBinaries } from '../../plugin/src/utils/platform.js';
+import { loadConfig } from '../../plugin/src/utils/config.js';
+import { handleVoice } from '../../plugin/src/commands/voice-handler.js';
 
 const baseConfig = {
   sttEngine: 'whisper-cli' as const,

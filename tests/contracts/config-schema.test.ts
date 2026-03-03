@@ -17,7 +17,7 @@ vi.mock('fs', async () => {
   };
 });
 
-import { DEFAULT_CONFIG, loadConfig, VoiceConfig } from '../../src/utils/config.js';
+import { DEFAULT_CONFIG, loadConfig, VoiceConfig } from '../../plugin/src/utils/config.js';
 
 describe('config schema contract', () => {
   it('DEFAULT_CONFIG has all required VoiceConfig fields', () => {

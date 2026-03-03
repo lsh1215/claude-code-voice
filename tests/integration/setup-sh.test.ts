@@ -5,13 +5,13 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 
 // Resolve paths relative to this test file (ESM-compatible)
-// tests/integration/ -> ../.. -> plugin root -> ../.. -> worktree root -> ../.. -> repo root
+// tests/integration/ -> ../../plugin -> plugin root; ../../plugin/.. -> repo root (worktree root)
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-const PLUGIN_DIR = path.resolve(__dirname, '../..');
-// plugin/ is inside worktrees/comprehensive-tests/; repo root is 4 levels up
-const REPO_ROOT = path.resolve(PLUGIN_DIR, '../../..');
+const PLUGIN_DIR = path.resolve(__dirname, '../../plugin');
+// repo root is the worktree root, one level above plugin/
+const REPO_ROOT = path.resolve(PLUGIN_DIR, '..');
 const SETUP_SH = path.join(REPO_ROOT, 'setup.sh');
 
 describe('setup.sh validation', () => {

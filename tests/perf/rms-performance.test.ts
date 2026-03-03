@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { computeRMS } from '../../src/vad/silence-vad.js';
+import { computeRMS } from '../../plugin/src/vad/silence-vad.js';
 
 describe('computeRMS performance', () => {
   it('1 second audio (32000 bytes at 16kHz mono 16-bit) completes within 5ms', () => {

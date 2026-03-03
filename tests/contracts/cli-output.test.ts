@@ -23,7 +23,7 @@ vi.mock('fs', async () => {
   };
 });
 
-vi.mock('../../src/utils/config.js', () => ({
+vi.mock('../../plugin/src/utils/config.js', () => ({
   loadConfig: vi.fn(),
   saveConfig: vi.fn(),
   getConfigDir: vi.fn(() => '/mock/.claude/plugins/voice'),
@@ -39,8 +39,8 @@ vi.mock('../../src/utils/config.js', () => ({
   },
 }));
 
-import { handleVoiceConfig } from '../../src/commands/voice-config-handler.js';
-import { loadConfig } from '../../src/utils/config.js';
+import { handleVoiceConfig } from '../../plugin/src/commands/voice-config-handler.js';
+import { loadConfig } from '../../plugin/src/utils/config.js';
 
 const mockConfig = {
   sttEngine: 'whisper-cli' as const,

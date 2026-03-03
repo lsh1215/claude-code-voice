@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { computeRMS } from '../../src/vad/silence-vad.js';
+import { computeRMS } from '../../plugin/src/vad/silence-vad.js';
 
 describe('computeRMS edge cases', () => {
   it('returns 0 for empty buffer (0 bytes)', () => {

@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { writeWAV } from '../../src/vad/silence-vad.js';
+import { writeWAV } from '../../plugin/src/vad/silence-vad.js';
 import fs from 'fs';
 import os from 'os';
 import path from 'path';

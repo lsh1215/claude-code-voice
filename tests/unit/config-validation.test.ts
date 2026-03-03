@@ -18,7 +18,7 @@ vi.mock('fs', async () => {
 });
 
 import fs from 'fs';
-import { loadConfig, DEFAULT_CONFIG } from '../../src/utils/config.js';
+import { loadConfig, DEFAULT_CONFIG } from '../../plugin/src/utils/config.js';
 
 describe('config loading and validation', () => {
   beforeEach(() => {

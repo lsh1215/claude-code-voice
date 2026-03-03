@@ -55,7 +55,7 @@ describe('audioDeviceIndex in ffmpeg arguments', () => {
   });
 
   it('captureAudio with default audioDeviceIndex uses :0', async () => {
-    const { captureAudio } = await import('../../src/stt/audio-capture.js');
+    const { captureAudio } = await import('../../plugin/src/stt/audio-capture.js');
 
     // We expect this to fail (no real ffmpeg) but we can inspect args
     try {
@@ -70,7 +70,7 @@ describe('audioDeviceIndex in ffmpeg arguments', () => {
   });
 
   it('captureAudio with audioDeviceIndex=1 uses :1', async () => {
-    const { captureAudio } = await import('../../src/stt/audio-capture.js');
+    const { captureAudio } = await import('../../plugin/src/stt/audio-capture.js');
 
     try {
       await captureAudio({ durationMs: 100, sampleRate: 16000, audioDeviceIndex: 1 });
@@ -83,7 +83,7 @@ describe('audioDeviceIndex in ffmpeg arguments', () => {
   });
 
   it('captureAudio with audioDeviceIndex=2 uses :2', async () => {
-    const { captureAudio } = await import('../../src/stt/audio-capture.js');
+    const { captureAudio } = await import('../../plugin/src/stt/audio-capture.js');
 
     try {
       await captureAudio({ durationMs: 100, sampleRate: 16000, audioDeviceIndex: 2 });

@@ -15,7 +15,7 @@ vi.mock('fs', async () => {
   };
 });
 
-vi.mock('../../src/utils/config.js', () => ({
+vi.mock('../../plugin/src/utils/config.js', () => ({
   loadConfig: vi.fn(() => ({
     sttEngine: 'whisper-cli',
     language: 'ko',
@@ -38,12 +38,12 @@ vi.mock('../../src/utils/config.js', () => ({
   },
 }));
 
-vi.mock('../../src/utils/logger.js', () => ({
+vi.mock('../../plugin/src/utils/logger.js', () => ({
   logger: { debug: vi.fn(), info: vi.fn(), error: vi.fn() },
 }));
 
 import { spawnSync } from 'child_process';
-import { transcribe } from '../../src/stt/whisper-engine.js';
+import { transcribe } from '../../plugin/src/stt/whisper-engine.js';
 
 describe('transcribe error handling', () => {
   beforeEach(() => {

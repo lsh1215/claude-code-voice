@@ -4,11 +4,11 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 
 // Resolve paths relative to this test file (ESM-compatible)
-// tests/integration/ -> ../.. -> plugin root
+// tests/integration/ -> ../../plugin -> plugin root
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-const PLUGIN_DIR = path.resolve(__dirname, '../..');
+const PLUGIN_DIR = path.resolve(__dirname, '../../plugin');
 
 function findFile(names: string[], dirs: string[]): string | null {
   for (const dir of dirs) {
