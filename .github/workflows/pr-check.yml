@@ -27,6 +27,7 @@ jobs:
             test
           scopes: |
             plugin
+            tests
             bridge-server
             mac-app
             ios-app
