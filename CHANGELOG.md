@@ -7,7 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-## [0.3.0] - 2026-03-04
+## [0.2.0] - 2026-03-04
 
 ### Added
 - `whisper-server` daemon mode: model loaded once in memory, HTTP `/inference` per request — eliminates cold-start latency (2–5 s → 0 on subsequent calls)
@@ -36,7 +36,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `brew install whisper-cpp ffmpeg`
 - whisper ggml-large-v3-turbo-q5_0 model (~600 MB) or ggml-base model (~141 MB)
 
-## [0.2.0] - 2026-03-03
+## [0.1.0] - 2026-03-03
 
 ### Added
 - `/voice` slash command: speak into mic → whisper-cli transcribes → text becomes Claude Code input

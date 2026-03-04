@@ -1,6 +1,6 @@
 # Release Notes
 
-## v0.3.0 — 2026-03-04
+## v0.2.0 — 2026-03-04
 
 **whisper-server Daemon Mode + Large-v3-Turbo Model**
 
@@ -69,7 +69,7 @@ claude --plugin-dir ./plugin
 
 ---
 
-## v0.2.0
+## v0.1.0
 
 **Voice Plugin Core — STT + VAD (Speech-to-Text with auto-stop)**
 
